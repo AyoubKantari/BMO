@@ -1,7 +1,12 @@
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # --- Claude API ---
-API_KEY = "sk-ant-hier-deinen-key-eintragen"
-CLAUDE_MODELL = "claude-opus-4-5"
+API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+CLAUDE_MODELL = "claude-haiku-4-5-20251001"
 MAX_TOKENS = 1024
 
 # --- Display (ILI9341 240x320) ---
