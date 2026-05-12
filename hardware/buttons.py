@@ -10,6 +10,7 @@ BUTTON_B = 27
 
 
 def setup(stimmung):
+    GPIO.cleanup()  # Vorherigen Pin-Zustand bereinigen
     GPIO.setmode(GPIO.BCM)
 
     GPIO.setup(BUTTON_A, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
