@@ -1,4 +1,6 @@
-import pygame
+import board
+import digitalio
+from adafruit_rgb_display import ili9341
 from PIL import Image
 
 BREITE = 320
@@ -7,28 +9,27 @@ HOEHE  = 240
 
 class Display:
     def __init__(self):
-        pygame.init()
-        self.fenster = pygame.display.set_mode((BREITE, HOEHE))
-        pygame.display.set_caption("BMO")
+        cs_pin    = digitalio.DigitalInOut(board.CE0)   # GPIO8  (Pin 24)
+        dc_pin    = digitalio.DigitalInOut(board.D24)   # GPIO24 (Pin 18)
+        reset_pin = digitalio.DigitalInOut(board.D25)   # GPIO25 (Pin 22)
+
+        spi = board.SPI()
+        self._display = ili9341.ILI9341(
+            spi,
+            rotation=270,        # Querformat 320x240
+            cs=cs_pin,
+            dc=dc_pin,
+            rst=reset_pin,
+            baudrate=24000000,
+        )
 
     def zeige(self, bild: Image.Image) -> None:
-        # PIL Image → pygame Surface
-        pygame_bild = pygame.image.fromstring(bild.tobytes(), bild.size, bild.mode)
-        self.fenster.blit(pygame_bild, (0, 0))
-        pygame.display.flip()
+        # Bild muss 320x240 sein — Library dreht intern auf 240x320 fuer den Chip
+        self._display.image(bild)
 
     def events_verarbeiten(self, stimmung=None) -> bool:
-        # gibt False zurück wenn Fenster geschlossen wird
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            if event.type == pygame.KEYDOWN and stimmung:
-                from bmo.stimmung import Zustand
-                if event.key == pygame.K_SPACE:
-                    stimmung.wechsle(Zustand.DENKT)
-                if event.key == pygame.K_ESCAPE:
-                    stimmung.unterbrechen()
+        # Auf dem Pi uebernehmen GPIO-Interrupts (buttons.py) die Eingaben
         return True
 
     def schliessen(self) -> None:
-        pygame.quit()
+        pass
