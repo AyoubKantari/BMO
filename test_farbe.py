@@ -28,6 +28,10 @@ display = ili9341.ILI9341(
 # Bei rotation=270 dreht sich width/height automatisch
 print(f"Display Groesse: {display.width} x {display.height}")
 
+# Bild muss im Querformat (320x240) übergeben werden —
+# die Library dreht es intern auf 240x320 für den Chip (rotation=270)
+BREITE, HOEHE = 320, 240
+
 farben = [
     ("Rot",   (255, 0,   0)),
     ("Gruen", (0,   255, 0)),
@@ -36,7 +40,7 @@ farben = [
 
 for name, rgb in farben:
     print(f"Zeige {name}")
-    bild = Image.new("RGB", (display.width, display.height), rgb)
+    bild = Image.new("RGB", (BREITE, HOEHE), rgb)
     display.image(bild)
     time.sleep(1)
 
